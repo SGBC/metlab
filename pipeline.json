@@ -1,0 +1,149 @@
+{
+ "name": "MetLab Pipeline",
+ "description": "",
+ "input":{
+   "reads":"file", 
+   "paired reads":"file", 
+   "reference":"file", 
+   "kraken_db":"./local_apps/kraken_db", 
+   "vFam":"./local_apps/vFam-A_2014.hmm"
+ },
+ "output":{},
+ "version":"0.2.0",
+ "groups": [
+   {
+     "name":"Data filtering",
+     "optional":true,
+     "commands": [
+       {
+         "name":"prinseq-lite",
+         "command":"<prinseq-lite.pl> -fastq <reads> [-fastq2 <paired reads>] -min_qual_mean %(min_qual)s -ns_max_p %(ns_max)s -derep %(derep)s -trim_qual_right %(trim_qual_right)s -out_format %(format)s -out_good %(out_good)s -out_bad %(out_bad)s [-graph_data %(graph_data)s]",
+         "in": ["reads", "[paired reads]"],
+         "out": {
+           "reads":"{<paired reads> <out_good>_1.fastq <out_good>.fastq}", 
+           "paired reads":"{<paired reads> <out_good>_2.fastq ''}"
+         },
+         "options": {
+           "derep":1,
+           "min_qual":20,
+           "format":3,
+           "trim_qual_right":20,
+           "ns_max":20,
+           "graph_data":null,
+           "out_good":"filtered_data",
+           "out_bad":"discarded_data"
+         }
+       }
+     ]
+   },
+   {
+     "name":"Reference mapping",
+     "optional":true,
+     "commands": [
+       {
+         "name":"bowtie2-build",
+         "command":"<bowtie2-build> <reference> ref_index",
+         "in": ["reference"],
+         "out": {},
+         "options": {}
+       },
+       {
+         "name":"bowtie2",
+         "command":"<bowtie2> -x ref_index {<paired reads> '-1 <reads>' '-U <reads>'} [-2 <paired reads>] -S host_mapping.sam",
+         "in": ["reference", "reads", "[paired reads]"],
+         "out": {},
+         "options": {}
+       },
+       {
+         "name":"samtools view",
+         "command":"<samtools> view -b -f 4 -o unmapped.bam host_mapping.sam",
+         "in": [],
+         "out": {}
+       },
+       {
+         "name":"samtools bam2fq",
+         "command":"<samtools> bam2fq -O unmapped.bam >unmapped.fastq",
+         "in": [],
+         "out": {
+           "reads":"unmapped.fastq",
+           "paired reads":null
+         }
+       }
+     ]
+   },
+   {
+     "name":"Assembly",
+     "optional":true,
+     "commands": [
+       {
+         "name":"Spades",
+         "command":"<spades.py> --careful {<paired reads> '-1 <reads> -2 <paired reads>' '-s <reads>'} -o <assembly>",
+         "in": ["reads", "[paired reads]"],
+         "out": {"reads":"./<assembly>/contigs.fasta"},
+         "options": {
+           "assembly":"spades_assembly"
+         }
+       }
+     ]
+   },
+   {
+     "name":"Taxonomic classification",
+     "optional":false,
+     "commands": [
+       {
+         "name":"kraken",
+         "command":"<kraken> --preload --db <kraken_db> --output kraken_results.txt --classified %(classified)s --unclassified kraken_unclassified.fasta <reads>",
+         "in": ["reads"],
+         "out": {"reads":"kraken_unclassified.fasta"},
+         "options": {
+           "classified":"kraken_classified.fasta"
+         }
+       },
+       {
+         "name":"kraken-report",
+         "command":"<kraken-report> --db <kraken_db> kraken_results.txt >kraken_report.txt",
+         "in": [],
+         "out": {},
+         "options": {}
+       },
+       {
+         "name":"kraken to krona",
+         "command":"<kraken_to_krona.py> kraken_report.txt",
+         "in": [],
+         "out": {},
+         "options": {}
+       },
+       {
+         "name":"krona plot",
+         "command":"<ktImportText> -o kraken_krona.html <reads> kraken_report.krona.in",
+         "in": [],
+         "out": {},
+         "options": {}
+       },
+       {
+         "name":"FragGeneScan",
+         "command":"<run_FragGeneScan.pl> -genome=<reads> -out=frag_gene_scan.out -complete=0 -train=%(train_file)s",
+         "in": [],
+         "out": {},
+         "options": {
+           "train_file":"illumina_5"
+         }
+       },
+       {
+         "name":"HMMsearch",
+         "command":"<hmmsearch> -o hmmsearch.out --tblout hmmsearch_vFamA_table.hs --incE 0.01 <vFam> frag_gene_scan.out.faa",
+         "in": [],
+         "out": {},
+         "options": {}
+       },
+       {
+         "name":"HMMsearch parse",
+         "command":"<vFam_HmmSearch_parse.py> -t hmmsearch_vFamA_table.hs -a <vFam_annotation> -e 0.1 -o hmmsearch-parsed.txt -k hmmsearch.krona.in",
+         "in": [],
+         "out": {},
+         "options": {}
+       }
+     ]
+   }
+  ]
+}

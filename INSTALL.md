@@ -8,7 +8,7 @@ MetLab requires a number of python modules to work properly, namely:
   * mpmath (optional)
 
 To use the "metapprox" Experimental Design module for approximating sequencing
-need for metagenomic project - users must either compile the c-exension using
+need for metagenomic project - OSX users must either compile the c-extensions using
 the "install_dependencies.sh"-script, or by installing the mpmath python module.
 
 MetLab installation was tested on Mac OSX 10.10.5, Ubuntu 14.04 and Centos 7.
@@ -32,11 +32,15 @@ that are not already in your PATH.
 Installing on Ubuntu
 ===================
 
-    sudo apt-get install python-biopython  
+    sudo apt-get install sqlite3 python-biopython python-tk
     curl -O https://bootstrap.pypa.io/get-pip.py
     sudo python get-pip.py
     sudo pip install numpy
     sudo pip install mpmath
+
+To build the metapprox module, you'll also need gmp, mpfr and python-dev:
+
+    apt-get install libgmp3-dev libmpfr-dev pyton-dev
 
 Then run the included "install_dependencies.sh"-script to install dependencies
 that are not already in your PATH.

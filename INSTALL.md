@@ -49,3 +49,17 @@ that are not already in your PATH.
 
 Installing on CentOS
 ===================
+
+    sudo yum install ncurses-devel python-biopython tkinter
+    curl -O https://bootstrap.pypa.io/get-pip.py
+    sudo python get-pip.py
+    sudo pip install mpmath
+
+To build the metapprox module, you'll also need gmp, mpfr and python-dev:
+
+    sudo yum install gmp-devel mpfr-devel
+
+Then run the included "install_dependencies.sh"-script to install dependencies
+that are not already in your PATH.
+
+    ./install_dependencies.sh

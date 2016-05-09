@@ -224,7 +224,7 @@ function install_samtools
     $GET "https://sourceforge.net/projects/samtools/files/latest/download?source=files" $OUT "samtools-1.3.tar.bz2"
 
     mkdir samtools-1.3
-    tar xf "samtools-1.3.tar.bz2" -C samtools --strip-components=1
+    tar xf "samtools-1.3.tar.bz2" -C samtools-1.3 --strip-components=1
     rm "samtools-1.3.tar.bz2"
     cd samtools-1.3 || exit 1
     ./configure

@@ -40,7 +40,7 @@ Installing on Ubuntu
 
 To build the metapprox module, you'll also need gmp, mpfr and python-dev:
 
-    apt-get install libgmp3-dev libmpfr-dev pyton-dev
+    sudo apt-get install libgmp3-dev libmpfr-dev python-dev
 
 Then run the included "install_dependencies.sh"-script to install dependencies
 that are not already in your PATH.

@@ -5,6 +5,7 @@ APP_PATH="local_apps"
 DATABASE="metlab.sqlite3"
 KRAKEN_DB="https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz"
 VFAM="http://derisilab.ucsf.edu/software/vFam/vFam-A_2014.hmm"
+VFAM_ANNOT="http://derisilab.ucsf.edu/software/vFam/annotationFiles_2014.zip"
 TABLE_DEF="CREATE TABLE IF NOT EXISTS paths (id INTEGER PRIMARY KEY, name TEXT, path TEXT)"
 
 if [[ "$(uname)" == "Darwin" ]]
@@ -146,14 +147,14 @@ function install_run_FragGeneScan.pl
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     [ -e "FragGeneScan.tar.gz" ] && rm "FragGeneScan.tar.gzz"
-    $GET "https://sourceforge.net/projects/fraggenescan/files/FragGeneScan1.20.tar.gz/download" $OUT "FragGeneScan.tar.gz"
+    $GET "https://sourceforge.net/projects/fraggenescan/files/FragGeneScan1.18.tar.gz/download" $OUT "FragGeneScan.tar.gz"
 
     tar xf "FragGeneScan.tar.gz"
     rm "FragGeneScan.tar.gz"
-    cd FragGeneScan*/
+    cd FragGeneScan*/ || exit 1
     make clean
     if [[ "$(uname)" == "Darwin" ]]
     then
@@ -167,7 +168,7 @@ function install_run_FragGeneScan.pl
     fi
     make fgs
     path="$(pwd)/run_FragGeneScan.pl"
-    cd $wd
+    cd $wd || exit 1
     insert_into_database "run_FragGeneScan.pl" "$path"
 }
 
@@ -382,15 +383,22 @@ function install_vFam
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     if [ ! -e "$(basename $VFAM)" ]
     then
         echo " - Downloading $(basename $VFAM)"
-        $GET $VFAM $OUT $(basename $VFAM)
+        $GET $VFAM $OUT "$(basename $VFAM)"
     fi
 
-    cd $wd
+    if [ ! -e "$(basename $VFAM_ANNOT)" ]
+    then
+        echo " - Downloading $(basename $VFAM_ANNOT)"
+        $GET $VFAM_ANNOT $OUT "$(basename $VFAM_ANNOT)"
+        unzip "$(basename $VFAM_ANNOT)"
+    fi
+
+    cd $wd || exit 1
 }
 
 # ---------------------- set paths to pipeline scripts ------------------------

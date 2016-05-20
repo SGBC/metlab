@@ -5,6 +5,7 @@ APP_PATH="local_apps"
 DATABASE="metlab.sqlite3"
 KRAKEN_DB="https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz"
 VFAM="http://derisilab.ucsf.edu/software/vFam/vFam-A_2014.hmm"
+VFAM_ANNOT="http://derisilab.ucsf.edu/software/vFam/annotationFiles_2014.zip"
 TABLE_DEF="CREATE TABLE IF NOT EXISTS paths (id INTEGER PRIMARY KEY, name TEXT, path TEXT)"
 
 if [[ "$(uname)" == "Darwin" ]]
@@ -85,7 +86,7 @@ function install_gcc_5.2.0
     cd $APP_PATH
     mkdir gcc-5.2.0
     cd gcc-5.2.0
-    
+
     [ ! -e gcc-5.2.0.tar.bz2 ] && $GET ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-5.2.0/gcc-5.2.0.tar.bz2 $OUT gcc-5.2.0.tar.bz2
     [ ! -e mpc-1.0.3.tar.gz ] && $GET ftp://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz $OUT mpc-1.0.3.tar.gz
     [ ! -e mpfr-3.1.4.tar.bz2 ] && $GET http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.bz2 $OUT mpfr-3.1.4.tar.bz2
@@ -101,8 +102,8 @@ function install_gcc_5.2.0
     make -j4
     make install
     cd ../..
-    
-    tar xf mpfr-3.1.4.tar.bz2 
+
+    tar xf mpfr-3.1.4.tar.bz2
     cd mpfr-3.1.4
     mkdir build
     cd build
@@ -110,8 +111,8 @@ function install_gcc_5.2.0
     make -j4
     make install
     cd ../..
-    
-    tar xf mpc-1.0.3.tar.gz 
+
+    tar xf mpc-1.0.3.tar.gz
     cd mpc-1.0.3
     mkdir build
     cd build
@@ -119,7 +120,7 @@ function install_gcc_5.2.0
     make -j4
     make install
     cd ../..
-    
+
     tar xf isl-0.14.tar.bz2
     cd isl-0.14
     mkdir build
@@ -128,7 +129,7 @@ function install_gcc_5.2.0
     make -j4
     make install
     cd ../..
-    
+
     tar xf gcc-5.2.0.tar.bz2
     cd gcc-5.2.0
     mkdir build
@@ -136,7 +137,7 @@ function install_gcc_5.2.0
     ../configure --prefix=${wd}/$APP_PATH/gcc --enable-checking=release --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc --with-mpc=${wd}/$APP_PATH/gcc --enable-languages=c,c++,fortran --with-isl=${wd}/$APP_PATH/gcc
     make -j4
     make install
-    
+
     cd $wd
 }
 
@@ -146,14 +147,14 @@ function install_run_FragGeneScan.pl
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
-    
+    cd $APP_PATH || exit 1
+
     [ -e "FragGeneScan.tar.gz" ] && rm "FragGeneScan.tar.gzz"
-    $GET "https://sourceforge.net/projects/fraggenescan/files/FragGeneScan1.20.tar.gz/download" $OUT "FragGeneScan.tar.gz"
-    
+    $GET "https://sourceforge.net/projects/fraggenescan/files/FragGeneScan1.18.tar.gz/download" $OUT "FragGeneScan.tar.gz"
+
     tar xf "FragGeneScan.tar.gz"
     rm "FragGeneScan.tar.gz"
-    cd FragGeneScan*/
+    cd FragGeneScan*/ || exit 1
     make clean
     if [[ "$(uname)" == "Darwin" ]]
     then
@@ -167,7 +168,7 @@ function install_run_FragGeneScan.pl
     fi
     make fgs
     path="$(pwd)/run_FragGeneScan.pl"
-    cd $wd
+    cd $wd || exit 1
     insert_into_database "run_FragGeneScan.pl" "$path"
 }
 
@@ -178,7 +179,7 @@ function install_prinseq-lite
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     [ -e "prinseq-lite-0.20.4.tar.gz" ] && rm "prinseq-lite-0.20.4.tar.gz"
     $GET "https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-0.20.4.tar.gz/download" $OUT "prinseq-lite-0.20.4.tar.gz"
     tar xf "prinseq-lite-0.20.4.tar.gz"
@@ -196,15 +197,15 @@ function install_bowtie2
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     link="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.7/bowtie2-2.2.7-linux-x86_64.zip/download"
     [[ "$(uname)" == "Darwin" ]] && link="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.7/bowtie2-2.2.7-macos-x86_64.zip/download"
-    
+
     [ -e "bowtie2-2.2.7.zip" ] && rm "bowtie2-2.2.7.zip"
     $GET $link $OUT "bowtie2-2.2.7.zip"
     unzip "bowtie2-2.2.7.zip"
     rm "bowtie2-2.2.7.zip"
-    
+
     path="$(pwd)/bowtie2-2.2.7/bowtie2"
     build_path="$(pwd)/bowtie2-2.2.7/bowtie2-build"
     cd $wd
@@ -218,19 +219,20 @@ function install_samtools
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
-    
+    cd $APP_PATH || exit 1
+
     [ -e "samtools-1.3.tar.bz2" ] && rm "samtools-1.3.tar.bz2"
     $GET "https://sourceforge.net/projects/samtools/files/latest/download?source=files" $OUT "samtools-1.3.tar.bz2"
-    
-    tar xf "samtools-1.3.tar.bz2"
+
+    mkdir samtools-1.3
+    tar xf "samtools-1.3.tar.bz2" -C samtools-1.3 --strip-components=1
     rm "samtools-1.3.tar.bz2"
-    cd samtools-1.3
+    cd samtools-1.3 || exit 1
     ./configure
     make
-    
+
     path="$(pwd)/samtools"
-    cd $wd
+    cd $wd || exit 1
     insert_into_database "samtools" "$path"
 }
 
@@ -241,17 +243,17 @@ function install_spades
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     [ -e "SPAdes-3.6.2.tar.gz" ] && rm "SPAdes-3.6.2.tar.gz"
     link="http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz"
     [[ "$(uname)" == "Darwin" ]] && link="http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Darwin.tar.gz"
     $GET $link $OUT "SPAdes-3.6.2.tar.gz"
     tar xf "SPAdes-3.6.2.tar.gz"
     rm "SPAdes-3.6.2.tar.gz"
-    
+
     path="$(pwd)/$(basename ${link/.tar.gz/})/bin/spades.py"
     cd $wd
-    
+
     insert_into_database "spades.py" "$path"
 }
 
@@ -265,11 +267,11 @@ function install_kraken
         ORG_PATH=$PATH
         PATH=$(pwd)/gcc/bin:$PATH
     fi
-    
+
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     [ -e "kraken-0.10.5-beta.tgz" ] && rm "kraken-0.10.5-beta.tgz"
     $GET "https://ccb.jhu.edu/software/kraken/dl/kraken-0.10.5-beta.tgz" $OUT "kraken-0.10.5-beta.tgz"
     tar xf "kraken-0.10.5-beta.tgz"
@@ -277,12 +279,15 @@ function install_kraken
     path="$(pwd)/kraken"
     cd kraken-0.10.5-beta
     ./install_kraken.sh $path
-    
+
     cd $wd
     insert_into_database "kraken" "$path/kraken"
     insert_into_database "kraken-report" "$path/kraken-report"
-    
-    PATH=$ORG_PATH
+
+    if [[ "$(uname)" == "Darwin" ]] # replace the path only if on osx
+    then
+        PATH=$ORG_PATH
+    fi
 }
 
 # -------------------------------- Kraken DB ----------------------------------
@@ -293,7 +298,7 @@ function install_kraken_db
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     if [ ! -d "kraken_db" ]
     then
         echo " - Downloading kraken database"
@@ -313,7 +318,7 @@ function install_hmmsearch
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     [ -e "hmmer-3.1b2.tar.gz" ] && rm "hmmer-3.1b2.tar.gz"
     link="http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2-linux-intel-x86_64.tar.gz"
     [[ "$(uname)" == "Darwin" ]] && link="http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2-macosx-intel.tar.gz"
@@ -340,7 +345,7 @@ function install_ktImportText
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    
+
     [ -e "KronaTools-2.6.1.tar" ] && rm "KronaTools-2.6.1.tar"
     $GET "https://github.com/marbl/Krona/releases/download/v2.6.1/KronaTools-2.6.1.tar" $OUT "KronaTools-2.6.1.tar"
     tar xf "KronaTools-2.6.1.tar"
@@ -348,7 +353,7 @@ function install_ktImportText
     cd "KronaTools-2.6.1"
     ./install.pl --prefix $(pwd)
     ./updateTaxonomy.sh taxonomy/
-    
+
     cat >ktImportText<<SCRIPT
 #!/bin/bash
 
@@ -365,10 +370,10 @@ export LD_LIBRARY_PATH=\$abs_path/lib:\$LD_LIBRARY_PATH
 \$abs_path/bin/ktImportText \$@
 SCRIPT
     chmod +x ktImportText
-    
+
     path="$(pwd)/ktImportText"
     cd $wd
-    
+
     insert_into_database "ktImportText" "$path"
 }
 
@@ -378,15 +383,22 @@ function install_vFam
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
-    
+    cd $APP_PATH || exit 1
+
     if [ ! -e "$(basename $VFAM)" ]
     then
         echo " - Downloading $(basename $VFAM)"
-        $GET $VFAM $OUT $(basename $VFAM)
+        $GET $VFAM $OUT "$(basename $VFAM)"
     fi
-    
-    cd $wd
+
+    if [ ! -e "$(basename $VFAM_ANNOT)" ]
+    then
+        echo " - Downloading $(basename $VFAM_ANNOT)"
+        $GET $VFAM_ANNOT $OUT "$(basename $VFAM_ANNOT)"
+        unzip "$(basename $VFAM_ANNOT)"
+    fi
+
+    cd $wd || exit 1
 }
 
 # ---------------------- set paths to pipeline scripts ------------------------

@@ -2,11 +2,12 @@
  "name": "MetLab Pipeline",
  "description": "",
  "input":{
-   "reads":"file", 
-   "paired reads":"file", 
-   "reference":"file", 
-   "kraken_db":"./local_apps/kraken_db", 
-   "vFam":"./local_apps/vFam-A_2014.hmm"
+   "reads":"file",
+   "paired reads":"file",
+   "reference":"file",
+   "kraken_db":"./local_apps/kraken_db",
+   "vFam":"./local_apps/vFam-A_2014.hmm",
+   "vFam_annotation":"./local_apps/annotationFiles_2014"
  },
  "output":{},
  "version":"0.2.0",
@@ -20,7 +21,7 @@
          "command":"<prinseq-lite.pl> -fastq <reads> [-fastq2 <paired reads>] -min_qual_mean %(min_qual)s -ns_max_p %(ns_max)s -derep %(derep)s -trim_qual_right %(trim_qual_right)s -out_format %(format)s -out_good %(out_good)s -out_bad %(out_bad)s [-graph_data %(graph_data)s]",
          "in": ["reads", "[paired reads]"],
          "out": {
-           "reads":"{<paired reads> <out_good>_1.fastq <out_good>.fastq}", 
+           "reads":"{<paired reads> <out_good>_1.fastq <out_good>.fastq}",
            "paired reads":"{<paired reads> <out_good>_2.fastq ''}"
          },
          "options": {

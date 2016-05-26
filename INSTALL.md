@@ -63,3 +63,19 @@ Then run the included "install_dependencies.sh"-script to install dependencies
 that are not already in your PATH.
 
     ./install_dependencies.sh
+
+
+Custom Kraken Databases
+===================
+
+
+Although the default kraken database gives decent results, it was not designed with viruses in mind. We provide two databases enriched in Viruses.
+
+Theses databases are built using combination of RefSeq (Archea + Bacteria) and the phages and viral divisions of GenBank. They can be found below:  
+
+| Database | size (tar.gz) | size (unpacked)
+--- | --- | ---
+|[ superdb](http://77.235.253.14/metlab/superdb_20150723.tar.gz) | 42G | 86.3G
+|[ mini superdb](http://77.235.253.14/metlab/mini_super_20150723.tar.gz) | 4G | 13.2G
+
+Once downloaded, unpack the archive and modify the kraken_db path in the 'Run pipelines' module to point to the correct folder.

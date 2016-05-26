@@ -28,11 +28,6 @@ The tool has three distinct parts:
 
 For Installing MetLab, please refer to [INSTALL.md](INSTALL.md)
 
-<!-- TODO: move db install to INSTALL.md -->
-The custom Kraken database can be found below:
-
-* [superdb](http://77.235.253.14/metlab/superdb_20150723.tar.gz)
-* [mini superdb](http://77.235.253.14/metlab/mini_super_20150723.tar.gz)
 
 ## USAGE
 

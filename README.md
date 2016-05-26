@@ -54,7 +54,7 @@ The experimental design part of MetLab can be used to approximate the amount of 
 From the experimental design tab, simply enter the estimated lowest abundance of the virus you want to detect, and its genome size, then click calculate.
 
 <!-- ![exp_design](examples/exp_design.png) -->
-<p style="text-align:center;"><img src=examples/exp_design.png/ height=400></p>
+<p style="text-align:center;"><img src=examples/exp_design.png/ height=500></p>
 
 
 The module will give you the probability to get a full coverage of 1X for your virus using different sequencing platforms.
@@ -64,7 +64,7 @@ The module will give you the probability to get a full coverage of 1X for your v
 This module simulates viral metagenomic datasets from sequencing profiles. It is especially useful if you want to test a new method of classification.
 
 <!-- ![sim_data](examples/sim_data.png) -->
-<p style="text-align:center;"><img src=examples/sim_data.png/ height=400></p>
+<p style="text-align:center;"><img src=examples/sim_data.png/ height=500></p>
 
 
 The module will output one (or two if you selected paired-end read) fastq file(s) and one key file containing the viral composition of your simulated dataset.
@@ -78,7 +78,7 @@ The only mandatory step of the pipeline is the taxonomic classification. MetLab 
 If you want to only assign taxonomic information to your data and skip the quality control and trimming, filtering of the host genome and assembly steps, untick the 'Data filtering', 'Reference mapping' and 'Assembly' boxes, upload your reads and click 'run'
 
 <!-- ![pipe_class_only](examples/pipe_class_only.png) -->
-<p style="text-align:center;"><img src=examples/pipe_class_only.png/ height=400></p>
+<p style="text-align:center;"><img src=examples/pipe_class_only.png/ height=500></p>
 
 
 By default, the standard kraken database is used. If you wish to use our custom database (which we highly recommend!), please refer to [INSTALL.md](INSTALL.md)

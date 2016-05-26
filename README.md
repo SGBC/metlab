@@ -37,7 +37,7 @@ Start metlab by typing
 
 in your terminal from the directory where you installed MetLab. It will launch a GUI, with separated tabs for the three distinct modules.
 
-Alternatively, you can launch MetLab from the finder by right clicking on MetLab.py, and select 'open with -> python launcher'
+Alternatively, you can launch MetLab from the finder by right clicking on MetLab.py, and select **open with -> python launcher**
 
 <!-- ![launch](examples/launch.png) -->
 <p style="text-align:center;"><img src=examples/launch.png/ height=350></p>
@@ -46,23 +46,86 @@ Alternatively, you can launch MetLab from the finder by right clicking on MetLab
 
 The experimental design part of MetLab can be used to approximate the amount of sequencing you need for your project.
 
-From the experimental design tab, simply enter the estimated lowest abundance of the virus you want to detect, and its genome size, then click calculate.
+Given an estimation of species diversity as well as estimated genome size range the module calculates the probability of covering all included genomes (such as at least one contig is produced from each genome) given a `theoretical optimal assembly. If a single run is not sufficient to reach that probability the module goes into iterative state, consecutively adding simulated runs until coverage probability is reach or a maximum of 10 runs are simulated
+
+From the experimental design tab, simply enter the estimated lowest abundance of the viruses you want to detect, and their estimated genome size, then click **calculate**.
 
 <!-- ![exp_design](examples/exp_design.png) -->
 <p style="text-align:center;"><img src=examples/exp_design.png/ height=500></p>
 
 
-The module will give you the probability to get a full coverage of 1X for your virus using different sequencing platforms.
-
 ### Metagenomic sequencing simulator
 
-This module simulates viral metagenomic datasets from sequencing profiles. It is especially useful if you want to test a new method of classification.
+The module produces viral datasets from sequencing profiles with realistic error profiling and known taxonomic content. It is especially useful if you want to test a new method of classification.
 
 <!-- ![sim_data](examples/sim_data.png) -->
 <p style="text-align:center;"><img src=examples/sim_data.png/ height=500></p>
 
-
 The module will output one (or two if you selected paired-end read) fastq file(s) and one key file containing the viral composition of your simulated dataset.
+
+The “key file” includes “Genome ID”, “Tax ID”, “Definition”, “Project”, and “No. Reads”, where the “Tax ID” is the NCBI taxonomy identifier, “Project” is the sequencing project identifier, and “No. Reads” is the number of reads from the species that is included in the dataset. The fastq file includes read headers formatted as “<record id>|ref:<genome id>-<read nr.>|pos:<start>-<end>”, where the “record_id” and “genome_id” are the NCBI accession number and genome id respectively, and “pos” is the read position in the record sequence.
+
+<br><br>
+
+Alternatively, the module can be used at a command-line application, by running
+
+    python metlab/metamaker.py
+
+from the metlab main directory.
+
+the options available for the command-line simulator are:
+
+    usage: metamaker.py [-h] [-c CREATE [CREATE ...]] [-d DISTRIBUTION]
+                        [-i INSERT] [-k KEYFILE] [-l LENGTH_VAR] [-o OUTPUT] [-p]
+                        [-m] [-n NO_READS] [-r READ_LENGTH] [-s NO_SPECIES]
+                        [-f PROFILE] [-x TAXA]
+                        [-a ERROR_VARIANCE [ERROR_VARIANCE ...]]
+                        [-e ERROR_FUNCTION [ERROR_FUNCTION ...]] [-v] [-q]
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c CREATE [CREATE ...], --create CREATE [CREATE ...]
+                            Create new profile from file(s). (default: None)
+      -d DISTRIBUTION, --distribution DISTRIBUTION
+                            Read distribution, 'uniform' or 'exponential'
+                            (default: uniform)
+      -i INSERT, --insert INSERT
+                            Matepair insert size. (default: 3000)
+      -k KEYFILE, --keyfile KEYFILE
+                            key filename. (default: None)
+      -l LENGTH_VAR, --length_var LENGTH_VAR
+                            Length variance. (default: 0.0)
+      -o OUTPUT, --output OUTPUT
+                            Output filename (default: output)
+      -p, --progress        Display progress information for long tasks. (default:
+                            False)
+      -m, --matepair        Generate matepairs. (default: False)
+      -n NO_READS, --no_reads NO_READS
+                            Number of reads. (default: 50M)
+      -r READ_LENGTH, --read_length READ_LENGTH
+                            Read length (default: 200)
+      -s NO_SPECIES, --no_species NO_SPECIES
+                            Number of species. (default: 10)
+      -f PROFILE, --profile PROFILE
+                            Sequencing profile to use for read generation. Changes
+                            default for reads, read_length and error_function.
+                            Valid options are Illumina MiSeq, IonTorrent,
+                            IonProton, IonTorrent 200bp or IonTorrent 400bp
+                            (default: None)
+      -x TAXA, --taxa TAXA  Taxonomic identifier of the species to download.
+                            (default: viruses)
+      -v, --verbose         Increase output Verbosity (default: 0)
+      -q, --quiet           Decrease output Verbosity (default: 0)
+
+    quality function arguments:
+      Factors for the quality and variance functions
+
+      -a ERROR_VARIANCE [ERROR_VARIANCE ...], --error_variance ERROR_VARIANCE [ERROR_VARIANCE ...]
+                            Factors for the error variance approximation equation.
+                            (default: [0])
+      -e ERROR_FUNCTION [ERROR_FUNCTION ...], --error_function ERROR_FUNCTION [ERROR_FUNCTION ...]
+                            Factors for the error approximation equation.
+                            (default: [25.0])                        
 
 ### Metagenomic analysis pipeline
 

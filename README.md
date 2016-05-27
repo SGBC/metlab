@@ -39,18 +39,16 @@ in your terminal from the directory where you installed MetLab. It will launch a
 
 Alternatively, you can launch MetLab from the finder by right clicking on MetLab.py, and select **open with -> python launcher**
 
-<!-- ![launch](examples/launch.png) -->
 <p style="text-align:center;"><img src=examples/launch.png/ height=350></p>
 
 ### Experimental design
 
 The experimental design part of MetLab can be used to approximate the amount of sequencing you need for your project.
 
-Given an estimation of species diversity as well as estimated genome size range the module calculates the probability of covering all included genomes (such as at least one contig is produced from each genome) given a `theoretical optimal assembly. If a single run is not sufficient to reach that probability the module goes into iterative state, consecutively adding simulated runs until coverage probability is reach or a maximum of 10 runs are simulated
+Given an estimation of species diversity as well as estimated genome size range the module calculates the probability of covering all included genomes (such as at least one contig is produced from each genome) given a theoretical optimal assembly. If a single run is not sufficient to reach that probability the module goes into iterative state, consecutively adding simulated runs until coverage probability is reach or a maximum of 10 runs are simulated
 
 From the experimental design tab, simply enter the estimated lowest abundance of the viruses you want to detect, and their estimated genome size, then click **calculate**.
 
-<!-- ![exp_design](examples/exp_design.png) -->
 <p style="text-align:center;"><img src=examples/exp_design.png/ height=500></p>
 
 
@@ -58,7 +56,6 @@ From the experimental design tab, simply enter the estimated lowest abundance of
 
 The module produces viral datasets from sequencing profiles with realistic error profiling and known taxonomic content. It is especially useful if you want to test a new method of classification.
 
-<!-- ![sim_data](examples/sim_data.png) -->
 <p style="text-align:center;"><img src=examples/sim_data.png/ height=500></p>
 
 The module will output one (or two if you selected paired-end read) fastq file(s) and one key file containing the viral composition of your simulated dataset.
@@ -131,11 +128,14 @@ the options available for the command-line simulator are:
 
 This module is the core of MetLab and offers different options to analyse metagenomes
 
+The metagenomic analysis pipeline is based on a set of programs suited for metagenomic analysis, where a number of steps are optional, depending on the analysis. The pipeline starts with data pre-processing with Prinseq-Lite. Trimming and filtering options are set to default values (extrapolated from a normal need), but you can easily modify them by expending the **Data filtering** menu. The next steps is host genome mapping with Bowtie2, designed for metagenomic analysis from animal samples. Reads that don’t map to the host genome are extracted using SAMTOOLS, and the analysis continues with these unmapped reads.
+
+The next step is de novo assembly with SPAdes, which is not default but improves classification in cases where high assembly coverage is available in the sample. The analysis finishes with taxonomic classification.
+
 The only mandatory step of the pipeline is the taxonomic classification. MetLab uses [kraken](https://ccb.jhu.edu/software/kraken/) and a combination of [fraggenescan](http://omics.informatics.indiana.edu/FragGeneScan/), [hmmer](http://hmmer.org) and [vFam](http://derisilab.ucsf.edu/software/vFam/) to assign taxonomic information to reads or contigs.
 
 If you want to only assign taxonomic information to your data and skip the quality control and trimming, filtering of the host genome and assembly steps, untick the 'Data filtering', 'Reference mapping' and 'Assembly' boxes, upload your reads and click 'run'
 
-<!-- ![pipe_class_only](examples/pipe_class_only.png) -->
 <p style="text-align:center;"><img src=examples/pipe_class_only.png/ height=500></p>
 
 

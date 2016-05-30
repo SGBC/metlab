@@ -280,10 +280,13 @@ as well as create sequencing profiles from sequence data.
         """
         profiles = {}
         
-        for profile in os.listdir(profile_dir):
-            if profile.split('.')[-1].lower() == 'json' and profile[0] != '.':
-                data = json.load(open("%s/%s" % (profile_dir, profile)))
-                profiles[data['key']] = data
+        try:
+            for profile in os.listdir(profile_dir):
+                if profile.split('.')[-1].lower() == 'json' and profile[0] != '.':
+                    data = json.load(open("%s/%s" % (profile_dir, profile)))
+                    profiles[data['key']] = data
+        except:
+            return profiles
         
         if return_format == "human":
             keys = profiles.keys()

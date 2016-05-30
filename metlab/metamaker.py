@@ -374,7 +374,10 @@ as well as create sequencing profiles from sequence data.
                    "quality_mean": list(m),
                    "quality_var": list(v),
                   }
-        with open("%s/%s.json" % (profile_dir, output), 'w') as out:
+
+        if not output.endswith(".json"):
+            output = "%s.json" % output
+        with open("%s/%s" % (profile_dir, output), 'w') as out:
             out.write(json.dumps(profile, indent=True))
     
     def run(self):
@@ -585,8 +588,6 @@ if __name__ == '__main__':
     
     app = MetaMaker( args.output, args.no_species )
     if args.create:
-        if not args.output.endswith(".json"):
-            args.output = "%s.json" % args.output
         app.parse_profile(args.create, args.output)
     else:
         if args.profile:

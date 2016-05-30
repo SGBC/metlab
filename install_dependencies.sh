@@ -80,65 +80,106 @@ function find_or_install
 function install_gcc_5.2.0
 {
     [[ "$(uname)" == "Darwin" ]] && [[ "$(which gcc)" == "" ]] && xcode-select --install
-
+    
+    GCC_VERSION="gcc-5.2.0"
+    MPC_VERSION="mpc-1.0.3"
+    MPFR_VERSION="mpfr-3.1.4"
+    GMP_VERSION="gmp-6.1.0"
+    ISL_VERSION="isl-0.14"
+    
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
-    mkdir gcc-5.2.0
-    cd gcc-5.2.0
-
-    [ ! -e gcc-5.2.0.tar.bz2 ] && $GET ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-5.2.0/gcc-5.2.0.tar.bz2 $OUT gcc-5.2.0.tar.bz2
-    [ ! -e mpc-1.0.3.tar.gz ] && $GET ftp://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz $OUT mpc-1.0.3.tar.gz
-    [ ! -e mpfr-3.1.4.tar.bz2 ] && $GET http://www.mpfr.org/mpfr-current/mpfr-3.1.4.tar.bz2 $OUT mpfr-3.1.4.tar.bz2
-    [ ! -e gmp-6.1.0.tar.bz2 ] && $GET https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2 $OUT gmp-6.1.0.tar.bz2
-    [ ! -e isl-0.14.tar.bz2 ] && $GET ftp://gcc.gnu.org/pub/gcc/infrastructure/isl-0.14.tar.bz2 $OUT isl-0.14.tar.bz2
+    mkdir -p $GCC_VERSION
+    cd $GCC_VERSION
+    
+    [ ! -e $GCC_VERSION.tar.bz2 ] && $GET ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/$GCC_VERSION/$GCC_VERSION.tar.bz2 $OUT $GCC_VERSION.tar.bz2
+    [ ! -e $MPC_VERSION.tar.gz ] && $GET ftp://ftp.gnu.org/gnu/mpc/$MPC_VERSION.tar.gz $OUT $MPC_VERSION.tar.gz
+    [ ! -e $MPFR_VERSION.tar.bz2 ] && $GET http://www.mpfr.org/mpfr-current/$MPFR_VERSION.tar.bz2 $OUT $MPFR_VERSION.tar.bz2
+    [ ! -e $GMP_VERSION.tar.bz2 ] && $GET https://gmplib.org/download/gmp/$GMP_VERSION.tar.bz2 $OUT $GMP_VERSION.tar.bz2
+    [ ! -e $ISL_VERSION.tar.bz2 ] && $GET ftp://gcc.gnu.org/pub/gcc/infrastructure/$ISL_VERSION.tar.bz2 $OUT $ISL_VERSION.tar.bz2
 
     LDFLAGS="-arch i386"
-    tar xf gmp-6.1.0.tar.bz2
-    cd gmp-6.1.0
-    mkdir build
+    [ ! -d "$GMP_VERSION" ] && tar xf $GMP_VERSION.tar.bz2
+    cd $GMP_VERSION
+    mkdir -p build
     cd build
-    ../configure --prefix=${wd}/$APP_PATH/gcc --enable-cxx
-    make -j4
-    make install
+    if [ ! -e .complete ]
+    then
+        ../configure --prefix=${wd}/$APP_PATH/gcc --enable-cxx
+        [ "$?" != "0" ] && echo "Could not configure $GMP_VERSION, aborting." && exit 1
+        make -j4
+        [ "$?" != "0" ] && echo "Could not make $GMP_VERSION, aborting." && exit 1
+        make install
+        [ "$?" != "0" ] && echo "Could not install $GMP_VERSION, aborting." && exit 1
+        touch .complete
+    fi
     cd ../..
 
-    tar xf mpfr-3.1.4.tar.bz2
-    cd mpfr-3.1.4
-    mkdir build
+    [ ! -d "$MPFR_VERSION" ] && tar xf $MPFR_VERSION.tar.bz2
+    cd $MPFR_VERSION
+    mkdir -p build
     cd build
-    ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp=${wd}/$APP_PATH/gcc
-    make -j4
-    make install
+    if [ ! -e .complete ]
+    then
+        ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp=${wd}/$APP_PATH/gcc
+        [ "$?" != "0" ] && echo "Could not configure $MPFR_VERSION, aborting." && exit 1
+        make -j4
+        [ "$?" != "0" ] && echo "Could not make $MPFR_VERSION, aborting." && exit 1
+        make install
+        [ "$?" != "0" ] && echo "Could not install $MPFR_VERSION, aborting." && exit 1
+        touch .complete
+    fi
     cd ../..
 
-    tar xf mpc-1.0.3.tar.gz
-    cd mpc-1.0.3
-    mkdir build
+    [ ! -d "$MPC_VERSION" ] && tar xf $MPC_VERSION.tar.gz
+    cd $MPC_VERSION
+    mkdir -p build
     cd build
-    ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc
-    make -j4
-    make install
+    if [ ! -e .complete ]
+    then
+        ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc
+        [ "$?" != "0" ] && echo "Could not configure $MPC_VERSION, aborting." && exit 1
+        make -j4
+        [ "$?" != "0" ] && echo "Could not make $MPC_VERSION, aborting." && exit 1
+        make install
+        [ "$?" != "0" ] && echo "Could not install $MPC_VERSION, aborting." && exit 1
+        touch .complete
+    fi
     cd ../..
 
-    tar xf isl-0.14.tar.bz2
-    cd isl-0.14
-    mkdir build
+    [ ! -d "$ISL_VERSION" ] && tar xf $ISL_VERSION.tar.bz2
+    cd $ISL_VERSION
+    mkdir -p build
     cd build
-    ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp-prefix=${wd}/$APP_PATH/gcc
-    make -j4
-    make install
+    if [ ! -e .complete ]
+    then
+        ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp-prefix=${wd}/$APP_PATH/gcc
+        [ "$?" != "0" ] && echo "Could not configure $ISL_VERSION, aborting." && exit 1
+        make -j4
+        [ "$?" != "0" ] && echo "Could not make $ISL_VERSION, aborting." && exit 1
+        make install
+        [ "$?" != "0" ] && echo "Could not install $ISL_VERSION, aborting." && exit 1
+        touch .complete
+    fi
     cd ../..
 
-    tar xf gcc-5.2.0.tar.bz2
-    cd gcc-5.2.0
-    mkdir build
+    [ ! -d "$GCC_VERSION" ] && tar xf $GCC_VERSION.tar.bz2
+    cd $GCC_VERSION
+    mkdir -p build
     cd build
-    ../configure --prefix=${wd}/$APP_PATH/gcc --enable-checking=release --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc --with-mpc=${wd}/$APP_PATH/gcc --enable-languages=c,c++,fortran --with-isl=${wd}/$APP_PATH/gcc
-    make -j4
-    make install
-
+    if [ ! -e .complete ]
+    then
+        ../configure --prefix=${wd}/$APP_PATH/gcc --enable-checking=release --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc --with-mpc=${wd}/$APP_PATH/gcc --enable-languages=c,c++,fortran --with-isl=${wd}/$APP_PATH/gcc
+        [ "$?" != "0" ] && echo "Could not configure $GCC_VERSION, aborting." && exit 1
+        make -j4
+        [ "$?" != "0" ] && echo "Could not make $GCC_VERSION, aborting." && exit 1
+        make install
+        [ "$?" != "0" ] && echo "Could not install $GCC_VERSION, aborting." && exit 1
+        touch .complete
+    fi
     cd $wd
+    touch $APP_PATH/gcc/.complete
 }
 
 # ------------------------------ FragGeneScan ---------------------------------
@@ -263,19 +304,22 @@ function install_kraken
 {
     if [[ "$(uname)" == "Darwin" ]]
     then
-        [ ! -d "$APP_PATH/gcc" ] && install_gcc_5.2.0
+        [ ! -e "$APP_PATH/gcc/.complete" ] && install_gcc_5.2.0
         ORG_PATH=$PATH
-        PATH=$(pwd)/gcc/bin:$PATH
+        PATH=$(pwd)/$APP_PATH/gcc/bin:$PATH
+        [[ "$(gcc --version | head -1)" != "gcc (GCC) 5.2.0" ]] && echo "Could not find GCC 5.2.0" && exit 0
     fi
-
+    
     wd="$(pwd)"
     mkdir -p $APP_PATH
     cd $APP_PATH
 
-    [ -e "kraken-0.10.5-beta.tgz" ] && rm "kraken-0.10.5-beta.tgz"
-    $GET "https://ccb.jhu.edu/software/kraken/dl/kraken-0.10.5-beta.tgz" $OUT "kraken-0.10.5-beta.tgz"
-    tar xf "kraken-0.10.5-beta.tgz"
-    rm "kraken-0.10.5-beta.tgz"
+    if [ ! -d "kraken-0.10.5-beta" ]
+    then
+        [ ! -e "kraken-0.10.5-beta.tgz" ] && $GET "https://ccb.jhu.edu/software/kraken/dl/kraken-0.10.5-beta.tgz" $OUT "kraken-0.10.5-beta.tgz"
+        tar xf "kraken-0.10.5-beta.tgz"
+        rm "kraken-0.10.5-beta.tgz"
+    fi
     path="$(pwd)/kraken"
     cd kraken-0.10.5-beta
     ./install_kraken.sh $path

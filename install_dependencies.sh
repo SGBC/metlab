@@ -80,30 +80,29 @@ function find_or_install
 function install_gcc_5.2.0
 {
     [[ "$(uname)" == "Darwin" ]] && [[ "$(which gcc)" == "" ]] && xcode-select --install
-    
+
     GCC_VERSION="gcc-5.2.0"
     MPC_VERSION="mpc-1.0.3"
     MPFR_VERSION="mpfr-3.1.4"
     GMP_VERSION="gmp-6.1.0"
     ISL_VERSION="isl-0.14"
-    
+
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
     mkdir -p $GCC_VERSION
-    cd $GCC_VERSION
-    
+    cd $GCC_VERSION || exit 1
+
     [ ! -e $GCC_VERSION.tar.bz2 ] && $GET ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/$GCC_VERSION/$GCC_VERSION.tar.bz2 $OUT $GCC_VERSION.tar.bz2
     [ ! -e $MPC_VERSION.tar.gz ] && $GET ftp://ftp.gnu.org/gnu/mpc/$MPC_VERSION.tar.gz $OUT $MPC_VERSION.tar.gz
     [ ! -e $MPFR_VERSION.tar.bz2 ] && $GET http://www.mpfr.org/mpfr-current/$MPFR_VERSION.tar.bz2 $OUT $MPFR_VERSION.tar.bz2
     [ ! -e $GMP_VERSION.tar.bz2 ] && $GET https://gmplib.org/download/gmp/$GMP_VERSION.tar.bz2 $OUT $GMP_VERSION.tar.bz2
     [ ! -e $ISL_VERSION.tar.bz2 ] && $GET ftp://gcc.gnu.org/pub/gcc/infrastructure/$ISL_VERSION.tar.bz2 $OUT $ISL_VERSION.tar.bz2
 
-    LDFLAGS="-arch i386"
     [ ! -d "$GMP_VERSION" ] && tar xf $GMP_VERSION.tar.bz2
-    cd $GMP_VERSION
+    cd $GMP_VERSION || exit 1
     mkdir -p build
-    cd build
+    cd build || exit 1
     if [ ! -e .complete ]
     then
         ../configure --prefix=${wd}/$APP_PATH/gcc --enable-cxx
@@ -114,12 +113,12 @@ function install_gcc_5.2.0
         [ "$?" != "0" ] && echo "Could not install $GMP_VERSION, aborting." && exit 1
         touch .complete
     fi
-    cd ../..
+    cd ../.. || exit 1
 
     [ ! -d "$MPFR_VERSION" ] && tar xf $MPFR_VERSION.tar.bz2
-    cd $MPFR_VERSION
+    cd $MPFR_VERSION || exit 1
     mkdir -p build
-    cd build
+    cd build || exit 1
     if [ ! -e .complete ]
     then
         ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp=${wd}/$APP_PATH/gcc
@@ -130,12 +129,12 @@ function install_gcc_5.2.0
         [ "$?" != "0" ] && echo "Could not install $MPFR_VERSION, aborting." && exit 1
         touch .complete
     fi
-    cd ../..
+    cd ../.. || exit 1
 
     [ ! -d "$MPC_VERSION" ] && tar xf $MPC_VERSION.tar.gz
-    cd $MPC_VERSION
+    cd $MPC_VERSION || exit 1
     mkdir -p build
-    cd build
+    cd build || exit 1
     if [ ! -e .complete ]
     then
         ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc
@@ -146,12 +145,12 @@ function install_gcc_5.2.0
         [ "$?" != "0" ] && echo "Could not install $MPC_VERSION, aborting." && exit 1
         touch .complete
     fi
-    cd ../..
+    cd ../.. || exit 1
 
     [ ! -d "$ISL_VERSION" ] && tar xf $ISL_VERSION.tar.bz2
-    cd $ISL_VERSION
+    cd $ISL_VERSION || exit 1
     mkdir -p build
-    cd build
+    cd build || exit 1
     if [ ! -e .complete ]
     then
         ../configure --prefix=${wd}/$APP_PATH/gcc --with-gmp-prefix=${wd}/$APP_PATH/gcc
@@ -162,12 +161,12 @@ function install_gcc_5.2.0
         [ "$?" != "0" ] && echo "Could not install $ISL_VERSION, aborting." && exit 1
         touch .complete
     fi
-    cd ../..
+    cd ../.. || exit 1
 
     [ ! -d "$GCC_VERSION" ] && tar xf $GCC_VERSION.tar.bz2
-    cd $GCC_VERSION
+    cd $GCC_VERSION || exit 1
     mkdir -p build
-    cd build
+    cd build || exit 1
     if [ ! -e .complete ]
     then
         ../configure --prefix=${wd}/$APP_PATH/gcc --enable-checking=release --with-gmp=${wd}/$APP_PATH/gcc --with-mpfr=${wd}/$APP_PATH/gcc --with-mpc=${wd}/$APP_PATH/gcc --enable-languages=c,c++,fortran --with-isl=${wd}/$APP_PATH/gcc
@@ -178,7 +177,7 @@ function install_gcc_5.2.0
         [ "$?" != "0" ] && echo "Could not install $GCC_VERSION, aborting." && exit 1
         touch .complete
     fi
-    cd $wd
+    cd $wd || exit 1
     touch $APP_PATH/gcc/.complete
 }
 
@@ -219,7 +218,7 @@ function install_prinseq-lite
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     [ -e "prinseq-lite-0.20.4.tar.gz" ] && rm "prinseq-lite-0.20.4.tar.gz"
     $GET "https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-0.20.4.tar.gz/download" $OUT "prinseq-lite-0.20.4.tar.gz"
@@ -227,7 +226,7 @@ function install_prinseq-lite
     rm "prinseq-lite-0.20.4.tar.gz"
     chmod +x "prinseq-lite-0.20.4/prinseq-lite.pl"
     path="$(pwd)/prinseq-lite-0.20.4/prinseq-lite.pl"
-    cd $wd
+    cd $wd || exit 1
     insert_into_database "prinseq-lite.pl" "$path"
 }
 
@@ -237,7 +236,7 @@ function install_bowtie2
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     link="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.7/bowtie2-2.2.7-linux-x86_64.zip/download"
     [[ "$(uname)" == "Darwin" ]] && link="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.7/bowtie2-2.2.7-macos-x86_64.zip/download"
@@ -249,7 +248,7 @@ function install_bowtie2
 
     path="$(pwd)/bowtie2-2.2.7/bowtie2"
     build_path="$(pwd)/bowtie2-2.2.7/bowtie2-build"
-    cd $wd
+    cd $wd || exit 1
     insert_into_database "bowtie2" "$path"
     insert_into_database "bowtie2-build" "$build_path"
 }
@@ -283,7 +282,7 @@ function install_spades
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     [ -e "SPAdes-3.6.2.tar.gz" ] && rm "SPAdes-3.6.2.tar.gz"
     link="http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Linux.tar.gz"
@@ -293,7 +292,7 @@ function install_spades
     rm "SPAdes-3.6.2.tar.gz"
 
     path="$(pwd)/$(basename ${link/.tar.gz/})/bin/spades.py"
-    cd $wd
+    cd $wd || exit 1
 
     insert_into_database "spades.py" "$path"
 }
@@ -309,10 +308,10 @@ function install_kraken
         PATH=$(pwd)/$APP_PATH/gcc/bin:$PATH
         [[ "$(gcc --version | head -1)" != "gcc (GCC) 5.2.0" ]] && echo "Could not find GCC 5.2.0" && exit 0
     fi
-    
+
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     if [ ! -d "kraken-0.10.5-beta" ]
     then
@@ -321,10 +320,10 @@ function install_kraken
         rm "kraken-0.10.5-beta.tgz"
     fi
     path="$(pwd)/kraken"
-    cd kraken-0.10.5-beta
+    cd kraken-0.10.5-beta || exit 1
     ./install_kraken.sh $path
 
-    cd $wd
+    cd $wd || exit 1
     insert_into_database "kraken" "$path/kraken"
     insert_into_database "kraken-report" "$path/kraken-report"
 
@@ -341,7 +340,7 @@ function install_kraken_db
     # download database
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     if [ ! -d "kraken_db" ]
     then
@@ -352,7 +351,7 @@ function install_kraken_db
         rm $(basename $KRAKEN_DB)
         mv $db_name kraken_db
     fi
-    cd $wd
+    cd $wd || exit 1
 }
 
 # --------------------------------- HMMER -------------------------------------
@@ -361,7 +360,7 @@ function install_hmmsearch
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     [ -e "hmmer-3.1b2.tar.gz" ] && rm "hmmer-3.1b2.tar.gz"
     link="http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2-linux-intel-x86_64.tar.gz"
@@ -371,13 +370,13 @@ function install_hmmsearch
     rm "hmmer-3.1b2.tar.gz"
     path="$(pwd)/hmmer-3.1b2"
     source_path=$(basename ${link/.tar.gz/})
-    cd $source_path
+    cd $source_path || exit 1
     ./configure --prefix="$path"
     make
     make install
     cd ..
     rm -rf $source_path
-    cd $wd
+    cd $wd || exit 1
 
     insert_into_database "hmmsearch" "$path/bin/hmmsearch"
 }
@@ -388,13 +387,13 @@ function install_ktImportText
 {
     wd="$(pwd)"
     mkdir -p $APP_PATH
-    cd $APP_PATH
+    cd $APP_PATH || exit 1
 
     [ -e "KronaTools-2.6.1.tar" ] && rm "KronaTools-2.6.1.tar"
     $GET "https://github.com/marbl/Krona/releases/download/v2.6.1/KronaTools-2.6.1.tar" $OUT "KronaTools-2.6.1.tar"
     tar xf "KronaTools-2.6.1.tar"
     rm "KronaTools-2.6.1.tar"
-    cd "KronaTools-2.6.1"
+    cd "KronaTools-2.6.1" || exit 1
     ./install.pl --prefix $(pwd)
     ./updateTaxonomy.sh taxonomy/
 
@@ -416,7 +415,7 @@ SCRIPT
     chmod +x ktImportText
 
     path="$(pwd)/ktImportText"
-    cd $wd
+    cd $wd || exit 1
 
     insert_into_database "ktImportText" "$path"
 }
@@ -449,7 +448,7 @@ function install_vFam
 
 function install_local
 {
-    cd $WD
+    cd $WD || exit 1
     sqlite3 $DATABASE "$TABLE_DEF"
     for SCRIPT in "kraken_to_krona.py" "vFam_HmmSearch_parse.py"
     do
@@ -471,9 +470,9 @@ function build_metapprox
         fi
         PATH=$APP_PATH/gcc/bin/:$PATH
     fi
-    cd metlab/metapprox
+    cd metlab/metapprox || exit 1
     ./make.sh
-    cd $wd
+    cd $wd || exit 1
 }
 
 [[ "$1" == "" ]] && set -- "$@" "all"

@@ -60,7 +60,7 @@ The module produces viral datasets from sequencing profiles with realistic error
 
 The module will output one (or two if you selected paired-end read) fastq file(s) and one key file containing the viral composition of your simulated dataset.
 
-The “key file” includes “Genome ID”, “Tax ID”, “Definition”, “Project”, and “No. Reads”, where the “Tax ID” is the NCBI taxonomy identifier, “Project” is the sequencing project identifier, and “No. Reads” is the number of reads from the species that is included in the dataset. The fastq file includes read headers formatted as “<record id>|ref:<genome id>-<read nr.>|pos:<start>-<end>”, where the “record_id” and “genome_id” are the NCBI accession number and genome id respectively, and “pos” is the read position in the record sequence.
+The “key file” includes “Genome ID”, “Tax ID”, “Definition”, “Project”, and “No. Reads”, where the “Tax ID” is the NCBI taxonomy identifier, “Project” is the sequencing project identifier, and “No. Reads” is the number of reads from the species that is included in the dataset. The fastq file includes read headers formatted as ```"<record id>|ref:<genome id>-<read nr.>|pos:<start>-<end>”```, where the “record_id” and “genome_id” are the NCBI accession number and genome id respectively, and “pos” is the read position in the record sequence.
 
 <br><br>
 
@@ -130,11 +130,11 @@ This module is the core of MetLab and offers different options to analyse metage
 
 The metagenomic analysis pipeline is based on a set of programs suited for metagenomic analysis, where a number of steps are optional, depending on the analysis. The pipeline starts with data pre-processing with Prinseq-Lite. Trimming and filtering options are set to default values (extrapolated from a normal need), but you can easily modify them by expending the **Data filtering** menu. The next steps is host genome mapping with Bowtie2, designed for metagenomic analysis from animal samples. Reads that don’t map to the host genome are extracted using SAMTOOLS, and the analysis continues with these unmapped reads.
 
-The next step is de novo assembly with SPAdes, which is not default but improves classification in cases where high assembly coverage is available in the sample. The analysis finishes with taxonomic classification.
+The next step is de novo assembly with SPAdes, which is not default but can improve classification in cases where high assembly coverage is available in the sample. The analysis ends with taxonomic classification.
 
 The only mandatory step of the pipeline is the taxonomic classification. MetLab uses [kraken](https://ccb.jhu.edu/software/kraken/) and a combination of [fraggenescan](http://omics.informatics.indiana.edu/FragGeneScan/), [hmmer](http://hmmer.org) and [vFam](http://derisilab.ucsf.edu/software/vFam/) to assign taxonomic information to reads or contigs.
 
-If you want to only assign taxonomic information to your data and skip the quality control and trimming, filtering of the host genome and assembly steps, untick the 'Data filtering', 'Reference mapping' and 'Assembly' boxes, upload your reads and click 'run'
+If you want to only assign taxonomic information to your data and skip the quality control and trimming, filtering of the host genome and assembly steps, untick the **Data filtering**, **Reference mapping** and **Assembly** boxes, upload your reads and click **run**!
 
 <p style="text-align:center;"><img src=examples/pipe_class_only.png/ height=500></p>
 

@@ -201,12 +201,16 @@ function install_run_FragGeneScan.pl
         ln -s /usr/include/sys/malloc.h
         mv util_lib.c util_lib.c.original
         sed "s/#include <malloc.h>/#include \"malloc.h\"/g" util_lib.c.original > util_lib.c
+        [ "$?" != "0" ] && echo "Could not modify util_lib.c, aborting." && exit 1
         mv hmm_lib.c hmm_lib.c.original
         sed "s/#include <malloc.h>/#include \"malloc.h\"/g" hmm_lib.c.original > hmm_lib.c.temp
+        [ "$?" != "0" ] && echo "Could not modify hmm_lib.c, aborting." && exit 1
         sed "s/<values.h>/<limits.h>/g" hmm_lib.c.temp > hmm_lib.c
+        [ "$?" != "0" ] && echo "Could not modify hmm_lib.c, aborting." && exit 1
         rm hmm_lib.c.temp
     fi
     make fgs
+    [ "$?" != "0" ] && echo "make fgs failed, aborting." && exit 1
     path="$(pwd)/run_FragGeneScan.pl"
     cd $wd || exit 1
     insert_into_database "run_FragGeneScan.pl" "$path"
@@ -244,6 +248,7 @@ function install_bowtie2
     [ -e "bowtie2-2.2.7.zip" ] && rm "bowtie2-2.2.7.zip"
     $GET $link $OUT "bowtie2-2.2.7.zip"
     unzip "bowtie2-2.2.7.zip"
+    [ "$?" != "0" ] && echo "Couldn't unzip Bowtie2, aborting." && exit 1
     rm "bowtie2-2.2.7.zip"
 
     path="$(pwd)/bowtie2-2.2.7/bowtie2"
@@ -266,10 +271,13 @@ function install_samtools
 
     mkdir samtools-1.3
     tar xf "samtools-1.3.tar.bz2" -C samtools-1.3 --strip-components=1
+    [ "$?" != "0" ] && echo "Couldn't unpack Samtools, aborting." && exit 1
     rm "samtools-1.3.tar.bz2"
     cd samtools-1.3 || exit 1
     ./configure
+    [ "$?" != "0" ] && echo "configure samtools failed, aborting." && exit 1
     make
+    [ "$?" != "0" ] && echo "make samtools failed, aborting." && exit 1
 
     path="$(pwd)/samtools"
     cd $wd || exit 1
@@ -289,6 +297,7 @@ function install_spades
     [[ "$(uname)" == "Darwin" ]] && link="http://spades.bioinf.spbau.ru/release3.6.2/SPAdes-3.6.2-Darwin.tar.gz"
     $GET $link $OUT "SPAdes-3.6.2.tar.gz"
     tar xf "SPAdes-3.6.2.tar.gz"
+    [ "$?" != "0" ] && echo "Couldn't unpack spades, aborting." && exit 1
     rm "SPAdes-3.6.2.tar.gz"
 
     path="$(pwd)/$(basename ${link/.tar.gz/})/bin/spades.py"
@@ -322,6 +331,8 @@ function install_kraken
     path="$(pwd)/kraken"
     cd kraken-0.10.5-beta || exit 1
     ./install_kraken.sh $path
+    # install_kraken.sh return 1 when successful
+    [ "$?" != "1" ] && echo "install_kraken.sh failed, aborting." && exit 1
 
     cd $wd || exit 1
     insert_into_database "kraken" "$path/kraken"
@@ -347,6 +358,7 @@ function install_kraken_db
         echo " - Downloading kraken database"
         $GET $KRAKEN_DB $OUT $(basename $KRAKEN_DB)
         tar xf $(basename $KRAKEN_DB)
+        [ "$?" != "0" ] && echo "Couldn't unpack kraken-db, aborting." && exit 1
         db_name="$(tar -tf $(basename $KRAKEN_DB) | head -1)"
         rm $(basename $KRAKEN_DB)
         mv $db_name kraken_db
@@ -367,13 +379,17 @@ function install_hmmsearch
     [[ "$(uname)" == "Darwin" ]] && link="http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2-macosx-intel.tar.gz"
     $GET $link $OUT "hmmer-3.1b2.tar.gz"
     tar xf "hmmer-3.1b2.tar.gz"
+    [ "$?" != "0" ] && echo "Couldn't unpack hmmer, aborting." && exit 1
     rm "hmmer-3.1b2.tar.gz"
     path="$(pwd)/hmmer-3.1b2"
     source_path=$(basename ${link/.tar.gz/})
     cd $source_path || exit 1
     ./configure --prefix="$path"
+    [ "$?" != "0" ] && echo "make hmmer failed, aborting." && exit 1
     make
+    [ "$?" != "0" ] && echo "make hmmer failed, aborting." && exit 1
     make install
+    [ "$?" != "0" ] && echo "make install hmmer failed, aborting." && exit 1
     cd ..
     rm -rf $source_path
     cd $wd || exit 1
@@ -392,10 +408,14 @@ function install_ktImportText
     [ -e "KronaTools-2.6.1.tar" ] && rm "KronaTools-2.6.1.tar"
     $GET "https://github.com/marbl/Krona/releases/download/v2.6.1/KronaTools-2.6.1.tar" $OUT "KronaTools-2.6.1.tar"
     tar xf "KronaTools-2.6.1.tar"
+    [ "$?" != "0" ] && echo "Couldn't unpack KronaTools, aborting." && exit 1
     rm "KronaTools-2.6.1.tar"
     cd "KronaTools-2.6.1" || exit 1
     ./install.pl --prefix $(pwd)
+    [ "$?" != "0" ] && echo "install KronaTools failed, aborting." && exit 1
     ./updateTaxonomy.sh taxonomy/
+    [ "$?" != "0" ] && echo "updateTaxonomy failed, aborting." && exit 1
+
 
     cat >ktImportText<<SCRIPT
 #!/bin/bash
@@ -439,6 +459,8 @@ function install_vFam
         echo " - Downloading $(basename $VFAM_ANNOT)"
         $GET $VFAM_ANNOT $OUT "$(basename $VFAM_ANNOT)"
         unzip "$(basename $VFAM_ANNOT)"
+        [ "$?" != "0" ] && echo "Couldn't unzip vFAM annotations, aborting." && exit 1
+
     fi
 
     cd $wd || exit 1
@@ -472,6 +494,7 @@ function build_metapprox
     fi
     cd metlab/metapprox || exit 1
     ./make.sh
+    [ "$?" != "0" ] && echo "make metapprox failed, aborting." && exit 1
     cd $wd || exit 1
 }
 

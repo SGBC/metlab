@@ -29,25 +29,27 @@ class External(threading.Thread):
             self.log.info("Starting %s" % self.name)
             self.log.info("cmd: %s" % ([self.name] + self.args))
             try:
+                self.started = True
                 if self.args[-1].startswith(">"):
                     self.process = Popen([self.name] + self.args[:-1], stdout=open(self.args[-1][1:], "w"), stderr=PIPE)
                 else:
                     self.process = Popen([self.name] + self.args, stdout=PIPE)
-                self.started = True
                 self.retval = self.process.communicate()[0].strip()
             except Exception as e:
                 self.log.error(e)
             
             if self._stop.isSet():
-                self.log.info("%s aborted" % self.name)
+                self.log.warning("%s aborted" % self.name)
                 self.process.kill()
                 self.status = "aborted"
+            elif self.retval != 0:
+                self.log.error("Failed Running %s" % self.name)
+                self.status = "failed"
             else:
                 self.log.info("Finished Running %s" % self.name)
+                self.status = "completed"
         except Exception as e:
-            self.status = "aborted"
-            print e
-        self.status = "completed"
+            self.status = "failed"
         return self.retval
     
     def stop(self):

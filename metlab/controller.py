@@ -292,8 +292,12 @@ class RunController(threading.Thread):
                     self.current_process = None
                     self.current.join()
                     self.current = None
-                if self.current and self.current.status == 'aborted':
-                    self.log.warning("%s aborted without finishing" % self.current.name)
+                if self.current and self.current.status in ['failed', 'aborted']:
+                    self.log.error("%s %s" % (self.current.name, self.current.status))
+                    self.current_process = None
+                    self.current.join()
+                    self.current = None
+                    self.run_queue.clear()
                 if self.run_queue and not self.current:
                     pid = sorted(self.run_queue.keys())[0]
                     cmd = self.run_queue[pid]

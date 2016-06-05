@@ -150,6 +150,13 @@
          "in": [],
          "out": {},
          "options": {}
+       },
+       {
+         "name":"hmmsearch krona plot",
+         "command":"<ktImportText> -o hmmsearch_krona.html <reads> hmmsearch.krona.in",
+         "in": [],
+         "out": {},
+         "options": {}
        }
      ]
    }

@@ -34,7 +34,8 @@ class External(threading.Thread):
                     self.process = Popen([self.name] + self.args[:-1], stdout=open(self.args[-1][1:], "w"), stderr=PIPE)
                 else:
                     self.process = Popen([self.name] + self.args, stdout=PIPE)
-                self.retval = self.process.communicate()[0].strip()
+                self.retval = self.process.communicate()[0]
+                self.retval = self.retval.strip() if self.retval else self.retval
             except Exception as e:
                 self.log.error(e)
             
@@ -42,13 +43,14 @@ class External(threading.Thread):
                 self.log.warning("%s aborted" % self.name)
                 self.process.kill()
                 self.status = "aborted"
-            elif self.retval != 0:
-                self.log.error("Failed Running %s" % self.name)
+            elif self.process.returncode != 0:
+                self.log.error("Failed Running %s, retval = '%s'" % (self.name, self.process.returncode))
                 self.status = "failed"
             else:
                 self.log.info("Finished Running %s" % self.name)
                 self.status = "completed"
         except Exception as e:
+            self.log.warning(e)
             self.status = "failed"
         return self.retval
     

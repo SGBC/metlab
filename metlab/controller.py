@@ -125,7 +125,7 @@ class Command(object):
                 sub_value = self._get_brackets(value)
                 for key, sub_value in sub_value.iteritems():
                     break
-                if sub_value in options:
+                if sub_value in options and options[sub_value]:
                     command[pos[0]:pos[1]] = list("%s <%s>" % (value[:key[0]], sub_value))
                 else:
                     command[pos[0]:pos[1]] = []
@@ -134,7 +134,7 @@ class Command(object):
         brackets = self._get_brackets(command, "<>")
         for pos in sorted(brackets.keys(), reverse=True):
             value = str("".join(brackets[pos]))
-            if value in options:
+            if value in options and options[value]:
                 command[pos[0]:pos[1]] = options[value]
         
         # update output values (simplified syntax from the commands)
@@ -145,7 +145,7 @@ class Command(object):
                 if value[0] == "{" and value[-1] == "}":
                     condition = value[2:value.find(">")]
                     cond_options = shlex.split( value[value.find(">")+1:-1] )
-                    if condition in options:
+                    if condition in options and options[condition]:
                         value = cond_options[0]
                     else:
                         value = cond_options[1]

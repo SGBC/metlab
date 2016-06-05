@@ -472,7 +472,7 @@ function install_local
 {
     cd $WD || exit 1
     sqlite3 $DATABASE "$TABLE_DEF"
-    for SCRIPT in "kraken_to_krona.py" "vFam_HmmSearch_parse.py"
+    for SCRIPT in "kraken_to_krona.py" "vFam_HmmSearch_parse.py" "to_fasta.py"
     do
         if [[ $(sqlite3 $DATABASE "SELECT id FROM paths WHERE name = '$SCRIPT'") == "" ]]
         then

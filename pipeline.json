@@ -92,6 +92,13 @@
      "optional":false,
      "commands": [
        {
+         "name":"to fasta",
+         "command":"<to_fasta.py> <reads> -o unmapped.fasta",
+         "in": [],
+         "out": {"reads":"unmapped.fasta"},
+         "options": {}
+       },
+       {
          "name":"kraken",
          "command":"<kraken> --preload --db <kraken_db> --output kraken_results.txt --classified %(classified)s --unclassified kraken_unclassified.fasta <reads>",
          "in": ["reads"],

@@ -309,10 +309,9 @@ class RunController(threading.Thread):
                     elif cmd[0] == 'cd':
                         os.chdir(cmd[1])
                     else:
-                        self.current = External(cmd[0], cmd[1:], pid = pid, log_name = self.log_name)
                         cwd = os.getcwd()
-                        if self.wd:
-                            os.chdir(self.wd)
+                        os.chdir(self.wd)
+                        self.current = External(cmd[0], cmd[1:], pid = pid, log_name = self.log_name, wd=self.wd)
                         self.current.start()
                         while not self.current.started:
                             time.sleep(0.1)
@@ -329,6 +328,7 @@ class RunController(threading.Thread):
         self.log.info("RunController finishing")
     
     def set_wd(self, dir_name):
+        self.log.info("Setting new WD to %s" % dir_name)
         if dir_name[0] == ".":
             self.wd = "%s%s" % (os.getcwd(), dir_name[1:])
         elif dir_name[0] != "/":

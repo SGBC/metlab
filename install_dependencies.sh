@@ -512,7 +512,7 @@ do
     [[ "$1" == "spades" ]] || [[ "$1" == "all" ]] && find_or_install "spades"
     [[ "$1" == "samtools" ]] || [[ "$1" == "all" ]] && find_or_install "samtools"
     [[ "$1" == "bowtie2" ]] || [[ "$1" == "all" ]] && find_or_install "bowtie2"
-    [[ "$1" == "prinseq-lite" ]] || [[ "$1" == "all" ]] && find_or_install "prinseq-lite"
+    [[ "$1" == "prinseq-lite" ]] || [[ "$1" == "all" ]] && find_or_install "prinseq-lite.pl"
     [[ "$1" == "local" ]] || [[ "$1" == "all" ]] && install_local
 	[[ "$1" == "metapprox" ]] || [[ "$1" == "all" ]] && build_metapprox
     [[ "$1" == "gcc" ]] && install_gcc_5.2.0

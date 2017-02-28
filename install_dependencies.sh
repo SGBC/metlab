@@ -83,7 +83,7 @@ function install_gcc_5.2.0
 
     GCC_VERSION="gcc-5.2.0"
     MPC_VERSION="mpc-1.0.3"
-    MPFR_VERSION="mpfr-3.1.4"
+    MPFR_VERSION="mpfr-3.1.5"
     GMP_VERSION="gmp-6.1.0"
     ISL_VERSION="isl-0.14"
 

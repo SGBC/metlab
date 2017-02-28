@@ -331,8 +331,7 @@ function install_kraken
     path="$(pwd)/kraken"
     cd kraken-0.10.5-beta || exit 1
     ./install_kraken.sh $path
-    # install_kraken.sh return 1 when successful
-    [ "$?" != "1" ] && echo "install_kraken.sh failed, aborting." && exit 1
+    [ "$?" != "0" ] && echo "install_kraken.sh failed, aborting." && exit 1
 
     cd $wd || exit 1
     insert_into_database "kraken" "$path/kraken"
